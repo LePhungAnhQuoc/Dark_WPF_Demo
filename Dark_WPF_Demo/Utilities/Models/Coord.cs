@@ -1,19 +1,16 @@
-﻿namespace AnhQuoc_OOP_C5_B2
+﻿public class Coord
 {
-    class Coord
-    {
-        #region Properties
-        public int X { get; set; }
-        public int Y { get; set; }
-        #endregion
+    #region Properties
+    public int X { get; set; }
+    public int Y { get; set; }
+    #endregion
 
-        #region Constructors
-        public Coord() { }
-        public Coord(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-        #endregion
+    #region Constructors
+    public Coord() { }
+    public Coord(int x, int y)
+    {
+        X = x;
+        Y = y;
     }
+    #endregion
 }

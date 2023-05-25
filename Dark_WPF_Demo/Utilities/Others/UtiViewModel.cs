@@ -4,41 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AnhQuoc_OOP_C5_B2
+public class UtiViewModel
 {
-    class UtiViewModel
+    public static void ReadLine(out DateTime value, bool isEsc)
     {
-        public static void ReadLine(out DateTime value, bool isEsc)
-        {
-            int[] data = new int[3] { 0, 0, 0 };
-            string[] texts = new string[3] { "Day", "Month", "Year" };
+        int[] data = new int[3] { 0, 0, 0 };
+        string[] texts = new string[3] { "Day", "Month", "Year" };
 
-            ReadLine:
+        ReadLine:
+        {
+            for (int index = 0; index < 3; index++)
             {
-                for (int index = 0; index < 3; index++)
+                Console.Write(texts[index] + ": ");
+                Utilities.ReadLine(out data[index], string.Empty, -1, -1);
+                if (data[index] == 0)
                 {
-                    Console.Write(texts[index] + ": ");
-                    Utilities.ReadLine(out data[index], string.Empty, -1, -1);
-                    if (data[index] == 0)
-                    {
-                        data[0] = 01;
-                        data[1] = 01;
-                        data[2] = 0001;
-                        break;
-                    }
+                    data[0] = 01;
+                    data[1] = 01;
+                    data[2] = 0001;
+                    break;
                 }
             }
-            try
-            {
-                value = new DateTime(data[2], data[1], data[0]);
-            }
-            catch (Exception ex)
-            {
-                Utilities.ClearInvalidInput(ex.Message, Utilities.GetCurrentCursorPosition());
-                Utilities.ClearLines(4);
-                Console.WriteLine();
-                goto ReadLine;
-            }
+        }
+        try
+        {
+            value = new DateTime(data[2], data[1], data[0]);
+        }
+        catch (Exception ex)
+        {
+            Utilities.ClearInvalidInput(ex.Message, Utilities.GetCurrentCursorPosition());
+            Utilities.ClearLines(4);
+            Console.WriteLine();
+            goto ReadLine;
         }
     }
 }
