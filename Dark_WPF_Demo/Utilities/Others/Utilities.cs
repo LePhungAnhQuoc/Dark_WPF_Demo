@@ -4,10 +4,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 //using AnhQuoc_OOP_C5_B2;
 
 public class Utilities
 {
+    public static void Allocate<T>(out List<List<T>> source, int row, int col) where T: class, new()
+    {
+        source = new List<List<T>>(row);
+        for (int idx = 0; idx < source.Capacity; idx += 1)
+        {
+            source.Add(new List<T>(col));
+            for (int idx2 = 0; idx2 < source[idx].Capacity; idx2 += 1)
+            {
+                source[idx].Add(new T());
+            }
+        }
+    }
+
     public static void ClearfReceipt()
     {
         XmlProvider.Open(Constants.fReceipts);

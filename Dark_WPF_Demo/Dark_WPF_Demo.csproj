@@ -55,6 +55,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataProviders\MenuData.cs" />
+    <Compile Include="DataProviders\XmlProvider.cs" />
+    <Compile Include="Utilities\Models\Coord.cs" />
+    <Compile Include="Utilities\Models\EnumClass.cs" />
+    <Compile Include="Utilities\Models\Menu.cs" />
+    <Compile Include="Utilities\Others\ConsoleHelper.cs" />
+    <Compile Include="Utilities\Others\Constants.cs" />
+    <Compile Include="Utilities\Others\PositionConsoleWindow.cs" />
+    <Compile Include="Utilities\Others\Utilities.cs" />
+    <Compile Include="Utilities\Others\UtiViewModel.cs" />
     <Page Include="frmOther.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
