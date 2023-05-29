@@ -23,12 +23,15 @@ namespace Dark_WPF_Demo
         // khởi tạo các Properties(Top, Left, Tag)
 
         #region Fields
+        private const int maxRow = 10;
+        private const int maxColumn = 10;
         private int _nRow, _nColumn;
+
         private List<List<Button>> _arrayBtn;
-        private int s;
-        private int gridW;
-        private int gridH;
-        private double cell, cell1, cell2;
+        private int s = 40;
+
+        private int _padding = 5;
+        private int _margin = 5;
         #endregion
 
         public frmOther()
@@ -37,7 +40,7 @@ namespace Dark_WPF_Demo
             btnCreate.Click += new RoutedEventHandler(BtnCreate_Click);
         }
 
-        public static void Init(List<List<Button>> source)
+        public void Init(List<List<Button>> source)
         {
             int idx = 0;
             int idx2 = 0;
@@ -45,13 +48,12 @@ namespace Dark_WPF_Demo
             {
                 foreach (Button item in items)
                 {
+                    item.BorderThickness = new Thickness(2);
                     item.Content = (idx + ", " + idx2).ToString();
-                    item.Name = "btnSub";
-
                     item.Width = s;
                     item.Height = s;
-
-                    // Update more here ..
+                    item.Margin = new Thickness(_margin);
+                    item.Padding = new Thickness(_padding);
                     idx2 += 1;
                 }
                 idx += 1;
@@ -61,16 +63,17 @@ namespace Dark_WPF_Demo
   
         private void DefineRowColDefinitions(Grid grid1)
         {
+            double size = s + (_margin * 2);
             for (int idx = 0; idx < _arrayBtn.Count; idx++)
             {
                 RowDefinition rowDef = new RowDefinition();
-                rowDef.Height = new GridLength(cell, GridUnitType.Pixel);
+                rowDef.Height = new GridLength(size, GridUnitType.Pixel);
                 grid1.RowDefinitions.Add(rowDef);
             }
             for (int idx = 0; idx < _arrayBtn[0].Count; idx++)
             {
                 ColumnDefinition colDef = new ColumnDefinition();
-                colDef.Width = new GridLength(cell, GridUnitType.Pixel);
+                colDef.Width = new GridLength(size, GridUnitType.Pixel);
                 grid1.ColumnDefinitions.Add(colDef);
             }
         }
@@ -81,9 +84,9 @@ namespace Dark_WPF_Demo
             DefineRowColDefinitions(grid1);
             
             int idx = 0;
+            int idx2 = 0;
             foreach (List<Button> lstBtn in _arrayBtn)
             {
-                int idx2 = 0;
                 foreach (Button btn in lstBtn)
                 {
                     btn.Click += BtnSub_Click;
@@ -95,6 +98,7 @@ namespace Dark_WPF_Demo
                     idx2 += 1;
                 }
                 idx += 1;
+                idx2 = 0;
             }
             gb.Content = grid1;
         }
@@ -102,16 +106,52 @@ namespace Dark_WPF_Demo
         private void BtnSub_Click(object sender, RoutedEventArgs e)
         {
             Button item = sender as Button;
-
+            MessageBox.Show("Button Click!");
             item.Background = new SolidColorBrush(Colors.Red);
-
             item.Click -= BtnSub_Click;
         }
 
         private void BtnCreate_Click(object sender, RoutedEventArgs e)
         {
-            gridW = gridH = -1;
             _nRow = _nColumn = -1;
+            if (!IsCheck())
+            {
+                ClearTextBox();
+                return;
+            }
+            Utilities.Allocate(out _arrayBtn, _nRow, _nColumn);
+            Init(_arrayBtn);
+            AddToGroupBox();
+
+            DisableTextBox();
+            btnCreate.IsEnabled = false;
+        }
+
+        public static IEnumerable<T> FindLogicalChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                foreach (object rawChild in LogicalTreeHelper.GetChildren(depObj))
+                {
+                    if (rawChild is DependencyObject)
+                    {
+                        DependencyObject child = (DependencyObject)rawChild;
+                        if (child is T)
+                        {
+                            yield return (T)child;
+                        }
+
+                        foreach (T childOfChild in FindLogicalChildren<T>(child))
+                        {
+                            yield return childOfChild;
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool IsCheck()
+        {
             try
             {
                 _nRow = Convert.ToInt32(txtRow.Text);
@@ -120,39 +160,37 @@ namespace Dark_WPF_Demo
             catch
             {
                 MessageBox.Show("Please input number", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-                ClearTextBox();
-                return;
+                return false;
             }
+
             if (_nRow <= 0 || _nColumn <= 0)
             {
                 MessageBox.Show("Please input number that greater than 0", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-                ClearTextBox();
-                return;
+                return false;
             }
-            gridW = _nColumn;
-            gridH = _nRow;
 
-            double totalSize2 = (gb.Height <= gb.Width) ? gb.Height : gb.Width;
-            cell1 = totalSize2 / _nRow;
-            cell2 = totalSize2 / _nColumn;
-            cell = (cell1 <= cell2) ? cell1 : cell2;
-
-            s = Convert.ToInt32(cell - 20);
-            if (s <= 0)
+            if (_nRow > maxRow || _nColumn > maxColumn)
             {
-                MessageBox.Show($"Too large number (s = {s})");
-                ClearTextBox();
-                return;
+                MessageBox.Show("Please input number that less than {0}");
+                return false;
             }
-            Utilities.Allocate(out _arrayBtn, _nRow, _nColumn);
-            Init(_arrayBtn);
-            AddToGroupBox();
+            return true;
         }
 
         private void ClearTextBox()
         {
-            txtRow.Text = string.Empty;
-            txtColumn.Text = string.Empty;
+            foreach (TextBox tb in FindLogicalChildren<TextBox>(this))
+            {
+                tb.Clear();
+            }
+        }
+
+        private void DisableTextBox()
+        {
+            foreach (TextBox tb in FindLogicalChildren<TextBox>(this))
+            {
+                tb.IsEnabled = false;
+            }
         }
     }
 }
