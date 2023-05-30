@@ -47,6 +47,11 @@ namespace Dark_WPF_Demo
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+
+            if (!e.Handled)
+            {
+                Reset();
+            }
         }
 
         public void Init(List<List<Button>> source)
@@ -123,6 +128,10 @@ namespace Dark_WPF_Demo
         private void BtnCreate_Click(object sender, RoutedEventArgs e)
         {
             _nRow = _nColumn = -1;
+            if (!ValidateNotEmpty())
+            {
+                return;
+            }
             if (!IsCheck())
             {
                 ClearTextBox();
@@ -157,6 +166,35 @@ namespace Dark_WPF_Demo
                     }
                 }
             }
+        }
+
+        public bool ValidateNotEmpty()
+        {
+            bool isCheck = false;
+            if (Utilities.IsEmpty(txtRow.Text))
+            {
+                txtRow.BorderThickness = new Thickness(2);
+                txtRow.BorderBrush = new SolidColorBrush(Colors.Red);
+            }
+            if (Utilities.IsEmpty(txtColumn.Text))
+            {
+                txtColumn.BorderThickness = new Thickness(2);
+                txtColumn.BorderBrush = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+                isCheck = true;
+            }
+            return isCheck;
+        }
+
+        public void Reset()
+        {
+            txtRow.BorderThickness = new Thickness(1);
+            txtRow.BorderBrush = new SolidColorBrush(Colors.Black);
+
+            txtColumn.BorderThickness = new Thickness(1);
+            txtColumn.BorderBrush = new SolidColorBrush(Colors.Black);
         }
 
         public bool IsCheck()
